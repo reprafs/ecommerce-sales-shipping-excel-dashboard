@@ -46,6 +46,8 @@ Nah sebelum ke duplikat, ternyata ada kasus unik: ada `order_id` yang sama muncu
 
 Jadi aku pakai `Home > Group By > Advanced`, intinya biar jadi 1 baris per order. Qty sama berat dijumlahin, kategori produknya digabung jadi satu teks. Kodenya:
 
+![Group By Setting](images/4.png)
+
 ```m
 Table.Group(
     #"Changed column type 1",
