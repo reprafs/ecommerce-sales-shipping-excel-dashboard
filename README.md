@@ -19,16 +19,9 @@ Semua file mentah aku taruh di satu folder dulu.
 
 Di Mac ternyata nggak ada akses langsung ke folder, jadi aku lewat `Data > Get Data (Power Query) > Blank Query`. Terus di Advanced Editor aku tulis ini:
 
-```m
-let
-    Source = Folder.Files("/Users/namamu/Documents/raw_sales&ship")
-in
-    Source
-```
+![Blank Query](images/2.png)
 
 Fungsinya buat narik semua file yang ada di folder itu.
-
-![Blank Query](images/2.png)
 
 ### 3. Combine files
 
