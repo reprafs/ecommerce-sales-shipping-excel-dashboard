@@ -141,18 +141,30 @@ Ini cocoknya buat nama file kayak `JulySales2025`.
 
 ![Sales Dashboard](images/sales.png)
 
-Insight Sales: menyusul.
+Insight Sales:
+1. Online Payment cancel rate-nya paling tinggi (18,56%) dan total diskonnya juga paling besar (sekitar Rp5,6 juta). Jadi diskon gede belum tentu bikin orang ga batal. Tapi ini baru korelasi, aku belum tau sebab pastinya.
+2. COD nyumbang sekitar 55% dari semua pembatalan (1.544 dari 2.833), padahal rate-nya cuma 13,37%. Ini karena ordernya paling banyak. Jadi kalau mau nurunin jumlah pembatalan, COD yang paling berpengaruh.
+3. Saldo ShopeePay paling jarang batal (8,74%), dan nilai transaksinya lumayan gede (sekitar Rp240 juta, hampir sama kayak Online Payment).
+4. Nilai transaksi paling gede ada di COD, sekitar Rp410 juta, jauh di atas metode lain.
+5. Pembayaran numpuk di Jawa Barat dan Banten, jauh di atas provinsi lain. Jawa Barat sendiri kira-kira seperempat dari total.
+6. Makin banyak kategori produk dalam satu order, rata-rata pembayarannya cenderung makin tinggi, puncaknya di 7-8 kategori (sekitar Rp185 ribu), terus turun di 9. Mungkin bisa jadi peluang bundling, tapi ga bisa dibilang selalu naik.
+7. Tren bulanan: 2024 mulai rendah (sekitar Rp21-24 juta di awal tahun), terus naik tajam dari Juli sampai puncak di September (sekitar Rp71 juta). 2025 malah mulai tinggi (sekitar Rp53 juta di Januari), turun sampai sekitar Rp30 juta di Mei-Juni, terus naik lagi sampai Oktober
 
 ### Shipping
 
 ![Shipping Dashboard](images/shipping.png)
 
-Insight Shipping: menyusul.
+Insight Shipping:
+1. Ongkir disubsidi gede banget. Biaya ongkir sekitar Rp306 juta, potongannya sekitar Rp222 juta (kira-kira 72%), jadi pembeli cuma bayar sekitar Rp85 juta (28%).
+2. Subsidi paling gede ada di Reguler (88,65%) dan Hemat (88,04%). Kargo 66,78%, Instan 54,71%.
+3. Kargo paling dominan, 13.406 dari 20.423 order (sekitar 66%), disusul Reguler (sekitar 27%). Instan, Hemat, sama Nextday kecil banget.
+4. Ongkir makin mahal kalau paketnya makin berat, dan Reguler kenaikannya paling tajam. Hemat paling murah di semua kelas berat.
+5. Tren bulanan: pembayaran ongkir 2024 memuncak sekitar September, sedangkan 2025 turun dan paling rendah sekitar Juni. Polanya mirip tren penjualan, jadi belum bisa dibilang ini karena subsidi.
 
 ## Kekurangan
 
 - `Average Transaction Value` aku hitung dari semua order, termasuk yang batal (nilainya Rp0), jadi angkanya kemungkinan lebih kecil dari yang seharusnya.
-- Kategori yang ordernya dikit banget (Nextday, BCA OneKlik, dll) ga aku jadiin kesimpulan, soalnya persentasenya bisa nipu.
+- Kategori yang ordernya dikit (Nextday, BCA OneKlik, dll) ga dijadiin kesimpulan, soalnya persentasenya bisa membingungkan.
 - Hubungan diskon sama pembatalan itu cuma korelasi, belum tentu sebab-akibat.
 - Alasan pembatalan sama data retur belum sempat aku analisis, mungkin di proyek berikutnya.
 
