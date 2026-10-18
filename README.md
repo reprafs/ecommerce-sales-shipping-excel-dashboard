@@ -1,13 +1,13 @@
 # E-Commerce Sales & Shipping Dashboard Indonesia (Excel)
 
-The data is from Kaggle, *Indonesia E-Commerce Sales & Shipping 2023-2025*, and it has 24 files (probably one file per month). I combined all of them, cleaned the data, and made 2 dashboards: Sales and Shipping.
+The data is from Kaggle, *Indonesia E-Commerce Sales & Shipping 2023-2025*, and it has 24 files (probably one file per month). I combined all of them with total 24.000+ of rows, cleaned the data, and made 2 dashboards: Sales and Shipping.
 
 ![Sales Dashboard](images/sales.png)
 ![Shipping Dashboard](images/shipping.png)
 
 Tools: Excel for Mac, Power Query, PivotTable, PivotChart, Slicer, Timeline.
 
-## How I did it
+## Start to clean
 
 ### 1. Prepare the folder
 
@@ -143,6 +143,9 @@ est_ongkir:
 ```
 
 This works for file names like `JulySales2025`.
+
+## Results:
+![Data_cleaned](images/table1.png)
 
 ## Dashboards
 
