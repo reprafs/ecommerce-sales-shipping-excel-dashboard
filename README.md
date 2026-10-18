@@ -1,43 +1,43 @@
-# Dashboard Sales & Shipping E-Commerce Indonesia (Excel)
+# E-Commerce Sales & Shipping Dashboard Indonesia (Excel)
 
-Ini dashboard pertamaku di Excel. Datanya dari Kaggle, *Indonesia E-Commerce Sales & Shipping 2023-2025*, isinya 24 file (kayaknya satu file per bulan). Aku gabungin semuanya, bersihin, terus bikin 2 dashboard: Sales sama Shipping.
+The data is from Kaggle, *Indonesia E-Commerce Sales & Shipping 2023-2025*, and it has 24 files (probably one file per month). I combined all of them, cleaned the data, and made 2 dashboards: Sales and Shipping.
 
 ![Sales Dashboard](images/sales.png)
 ![Shipping Dashboard](images/shipping.png)
 
 Tools: Excel for Mac, Power Query, PivotTable, PivotChart, Slicer, Timeline.
 
-## Cara ngerjainnya
+## How I did it
 
-### 1. Siapin folder
+### 1. Prepare the folder
 
-Semua file mentah aku taruh di satu folder dulu.
+I put all the raw files in one folder first.
 
-![Folder berisi 24 file](images/1.png)
+![Folder with 24 files](images/1.png)
 
-### 2. Masukin folder ke Power Query
+### 2. Load the folder into Power Query
 
-Di Mac ternyata nggak ada akses langsung ke folder, jadi aku lewat `Data > Get Data (Power Query) > Blank Query`. Terus di Advanced Editor aku tulis ini:
+On Mac, Excel can't connect to a folder directly, so I went through `Data > Get Data (Power Query) > Blank Query`. Then in the Advanced Editor I typed this:
 
 ![Blank Query](images/2.png)
 
-Fungsinya buat narik semua file yang ada di folder itu.
+It pulls in all the files that are inside the folder.
 
 ### 3. Combine files
 
-Habis itu cek-cek datanya dulu, baru pilih `Combine > Combine Files`. Jadinya 24 file nyatu jadi satu tabel. Ada kolom `Source.Name` juga yang isinya nama file asalnya (contoh `AprilSales2024`), nanti kepake lagi.
+After checking the data, I chose `Combine > Combine Files`. So the 24 files became one table. There is also a `Source.Name` column that shows the file name of each row (for example `AprilSales2024`). I use it again later.
 
-![Hasil combine](images/3.png)
+![Combined result](images/3.png)
 
-### 4. Hapus order_id yang kosong
+### 4. Remove blank order_id
 
-Cek-cek lagi, ada baris yang `order_id`-nya kosong, ya aku hapus.
+I checked again and some rows had an empty `order_id`, so I deleted them.
 
 ### 5. Group By
 
-Nah sebelum ke duplikat, ternyata ada kasus unik: ada `order_id` yang sama muncul beberapa kali, total pembayarannya juga sama, dll. Kayaknya itu karena 1 order isinya beberapa produk, jadi barisnya kepecah. Kalau dibiarin, nanti nilainya kehitung dobel.
+Before removing duplicates, I found something unusual: the same `order_id` appears more than once, and the total payment is also the same, etc. I think it's because one order has several products, so the rows got split. If I leave it like that, the values will be counted twice.
 
-Jadi aku pakai `Home > Group By > Advanced`, intinya biar jadi 1 baris per order. Qty sama berat dijumlahin, kategori produknya digabung jadi satu teks. Kodenya:
+So I used `Home > Group By > Advanced`. The idea is to make it 1 row per order. Quantity and weight are summed up, and the product categories are joined into one text. Here is the setting and the code:
 
 ![Group By Setting](images/4.png)
 
@@ -61,27 +61,30 @@ Table.Group(
 )
 ```
 
-Kalau ga salah artinya: yang di atas itu kolom yang dijadiin patokan buat ngelompokin, yang di bawah itu kolom yang dijumlahin / digabung.
+If I understand it correctly: the columns at the top are used to group the rows, and the ones at the bottom are summed up or joined.
 
-Abis itu aku load ke Excel, terus sisanya cleaning pakai rumus Excel biasa.
+After that I loaded it to Excel, and did the rest of the cleaning with normal Excel formulas.
 
-### 6. Cleaning pakai rumus
+### 6. Cleaning with formulas
 
-Tabelnya aku jadiin Table dulu (`Insert > Table`) biar rumusnya bisa pakai nama kolom. Kalau Excel kamu pemisahnya titik koma, ganti aja komanya.
+I turned the data into a Table first (`Insert > Table`) so the formulas can use column names. If your Excel uses semicolons as separators, just change the commas.
 
-**Berat.** Isinya ada tulisan " gr" (kayak `1200 gr`), jadi aku buang biar jadi angka:
+**Weight.** It has the text " gr" in it (like `1200 gr`), so I removed it to make it a number:
 
 ```excel
 =VALUE(SUBSTITUTE([@[Total Berat]]," gr",""))
 ```
 
-**Total Pembayaran.** Ada titiknya, aku hapus:
+**Total Pembayaran (total payment).** It has dots in it, so I removed them:
 
 ```excel
 =VALUE(SUBSTITUTE([@[Total Pembayaran]],".",""))
 ```
 
-**Ongkir sama potongan ongkir.** Ada nilai yang kebaca kecil banget (misal `8`, padahal harusnya `8.000`), jadi kalau di bawah 1000 aku kali 1000:
+**Shipping cost and shipping discount.** Some values were read as very small numbers (for example `8`, but it should be `8,000`), so if the value is below 1000 I multiply it by 1000:
+(The reason is the pattern itself, that amount above 1000 they already intepreted it as Rupiah)
+
+for potongan_pengiriman:
 
 ```excel
 potongan_pengiriman:
@@ -90,6 +93,10 @@ potongan_pengiriman:
       [@[Estimasi Potongan Biaya Pengiriman]]*1000,
       [@[Estimasi Potongan Biaya Pengiriman]]))
 
+```
+For est_ongkir:
+
+```excel
 est_ongkir:
 =IF([@[Perkiraan Ongkos Kirim]]="","",
    IF([@[Perkiraan Ongkos Kirim]]<1000,
@@ -97,13 +104,15 @@ est_ongkir:
       [@[Perkiraan Ongkos Kirim]]))
 ```
 
-**is_cancelled.** Kalau statusnya "batal" jadi 1, selain itu 0:
+**is_cancelled.** If the status is "batal" (cancelled) it becomes 1, otherwise 0:
+
+**is_success.** If the status is "batal" (cancelled) it becomes 0, otherwise 1:
 
 ```excel
 =IF(LOWER(TRIM([@[Status Pesanan]]))="batal",1,0)
 ```
 
-**ongkos_dibayar.** Ongkir dikurang potongan, tapi minimal 0 biar ga minus. Kalau ordernya batal ya 0:
+**ongkos_dibayar (shipping paid by the buyer).** Shipping cost minus the discount, but the minimum is 0 so it doesn't go negative. If the order is cancelled, it's 0:
 
 ```excel
 =IF([@[is_cancelled]]=0,
@@ -111,7 +120,7 @@ est_ongkir:
    0)
 ```
 
-**tot_diskon.** Sama kayak ongkir, ada yang kebaca kecil. Kalau desimal dikali 1000 terus dibulatin, kalau angkanya 1, 2, 3, 4, 5, 7, atau 10 dibiarin, sisanya dikali 1000:
+**tot_diskon (total discount).** Same problem as the shipping cost, some values were read as small numbers. If it has decimals I multiply by 1000 and round it. If the number is 1, 2, 3, 4, 5, 7, or 10 I leave it as it is, and the rest are multiplied by 1000:
 
 ```excel
 =IF([@[Total Diskon]]="","",
@@ -122,7 +131,7 @@ est_ongkir:
          [@[Total Diskon]]*1000)))
 ```
 
-**Tanggal yang kosong.** Pas lanjut ngecek, ternyata `Waktu Pesanan Dibuat` kosong di bulan Juli sama Desember. Akhirnya aku ambil bulan dan tahunnya dari `Source.Name` (kan ada nama filenya). Tanggalnya jadi tanggal 1 aja karena cuma bulan sama tahun yang ada:
+**Blank dates.** While checking more, I found that `Waktu Pesanan Dibuat` (order time) was empty for July and December. So I took the month and year from `Source.Name` (because the file name has it). The date becomes the 1st of the month, because only the month and year are available: (This is the best solution i can get, so i can retrieve the month and year to my data)
 
 ```excel
 =IF([@[Waktu Pesanan Dibuat]]<>"",
@@ -133,41 +142,41 @@ est_ongkir:
         1))
 ```
 
-Ini cocoknya buat nama file kayak `JulySales2025`.
+This works for file names like `JulySales2025`.
 
-## Dashboard
+## Dashboards
 
 ### Sales
 
 ![Sales Dashboard](images/sales.png)
 
-Insight Sales:
-1. Online Payment cancel rate-nya paling tinggi (18,56%) dan total diskonnya juga paling besar (sekitar Rp5,6 juta). Jadi diskon gede belum tentu bikin orang ga batal. Tapi ini baru korelasi, aku belum tau sebab pastinya.
-2. COD nyumbang sekitar 55% dari semua pembatalan (1.544 dari 2.833), padahal rate-nya cuma 13,37%. Ini karena ordernya paling banyak. Jadi kalau mau nurunin jumlah pembatalan, COD yang paling berpengaruh.
-3. Saldo ShopeePay paling jarang batal (8,74%), dan nilai transaksinya lumayan gede (sekitar Rp240 juta, hampir sama kayak Online Payment).
-4. Nilai transaksi paling gede ada di COD, sekitar Rp410 juta, jauh di atas metode lain.
-5. Pembayaran numpuk di Jawa Barat dan Banten, jauh di atas provinsi lain. Jawa Barat sendiri kira-kira seperempat dari total.
-6. Makin banyak kategori produk dalam satu order, rata-rata pembayarannya cenderung makin tinggi, puncaknya di 7-8 kategori (sekitar Rp185 ribu), terus turun di 9. Mungkin bisa jadi peluang bundling, tapi ga bisa dibilang selalu naik.
-7. Tren bulanan: 2024 mulai rendah (sekitar Rp21-24 juta di awal tahun), terus naik tajam dari Juli sampai puncak di September (sekitar Rp71 juta). 2025 malah mulai tinggi (sekitar Rp53 juta di Januari), turun sampai sekitar Rp30 juta di Mei-Juni, terus naik lagi sampai Oktober
+Sales insights:
+1. Online Payment has the highest cancellation rate (18.56%) and also the biggest total discount (around Rp5.6 million). So a big discount doesn't always stop people from cancelling. But this is only a correlation, I don't know the exact cause yet.
+2. COD makes up about 55% of all cancellations (1,544 out of 2,833), even though its rate is only 13.37%. This is because it has the most orders. So if the goal is to reduce the number of cancellations, COD has the biggest impact.
+3. Saldo ShopeePay has the lowest cancellation rate (8.74%), and its transaction value is quite big (around Rp240 million, almost the same as Online Payment).
+4. The biggest transaction value is from COD, around Rp410 million, far above the other methods.
+5. Payments are concentrated in Jawa Barat and Banten, far above the other provinces. Jawa Barat alone is roughly a quarter of the total.
+6. The more product categories in one order, the higher the average payment tends to be. It peaks at 7-8 categories (around Rp185 thousand), then drops at 9. It might be a chance for bundling, but I can't say it always goes up.
+7. Monthly trend: 2024 starts low (around Rp21-24 million at the beginning of the year), then rises sharply from July and peaks in September (around Rp71 million). 2025 actually starts high (around Rp53 million in January), drops to around Rp30 million in May-June, then goes up again until October.
 
 ### Shipping
 
 ![Shipping Dashboard](images/shipping.png)
 
-Insight Shipping:
-1. Ongkir disubsidi gede banget. Biaya ongkir sekitar Rp306 juta, potongannya sekitar Rp222 juta (kira-kira 72%), jadi pembeli cuma bayar sekitar Rp85 juta (28%).
-2. Subsidi paling gede ada di Reguler (88,65%) dan Hemat (88,04%). Kargo 66,78%, Instan 54,71%.
-3. Kargo paling dominan, 13.406 dari 20.423 order (sekitar 66%), disusul Reguler (sekitar 27%). Instan, Hemat, sama Nextday kecil banget.
-4. Ongkir makin mahal kalau paketnya makin berat, dan Reguler kenaikannya paling tajam. Hemat paling murah di semua kelas berat.
-5. Tren bulanan: pembayaran ongkir 2024 memuncak sekitar September, sedangkan 2025 turun dan paling rendah sekitar Juni. Polanya mirip tren penjualan, jadi belum bisa dibilang ini karena subsidi.
+Shipping insights:
+1. Shipping is heavily subsidized. The shipping cost is around Rp306 million, the discount is around Rp222 million (about 72%), so buyers only pay around Rp85 million (28%).
+2. The biggest subsidy is on Reguler (88.65%) and Hemat (88.04%). Kargo is 66.78% and Instan is 54.71%.
+3. Kargo is the most dominant, 13,406 out of 20,423 orders (about 66%), followed by Reguler (about 27%). Instan, Hemat, and Nextday are very small.
+4. Shipping gets more expensive when the package is heavier, and Reguler goes up the fastest. Hemat is the cheapest in every weight class.
+5. Monthly trend: shipping payment in 2024 peaks around September, while 2025 goes down and is lowest around June. The pattern looks similar to the sales trend, so I can't say it's because of the subsidy.
 
-## Kekurangan
+## Limitations
 
-- `Average Transaction Value` aku hitung dari semua order, termasuk yang batal (nilainya Rp0), jadi angkanya kemungkinan lebih kecil dari yang seharusnya.
-- Kategori yang ordernya dikit (Nextday, BCA OneKlik, dll) ga dijadiin kesimpulan, soalnya persentasenya bisa membingungkan.
-- Hubungan diskon sama pembatalan itu cuma korelasi, belum tentu sebab-akibat.
-- Alasan pembatalan sama data retur belum sempat aku analisis, mungkin di proyek berikutnya.
+- I calculated `Average Transaction Value` from all orders, including cancelled ones (their value is Rp0), so the number is probably lower than it should be.
+- Categories with very few orders (Nextday, BCA OneKlik, etc.) are not used for conclusions, because the percentages can be confusing.
+- The relationship between discount and cancellation is only a correlation, not necessarily cause and effect.
+- I haven't analyzed the cancellation reasons and the return data yet, maybe in my next project.
 
-## Yang aku pelajari
+## What I learned
 
-Cek jumlah sampel dulu sebelum nampilin persentase, terus kenalan sama datanya dulu sebelum bikin chart. Ternyata lebih banyak waktu kepake buat bersihin data daripada bikin dashboard-nya.
+Check the sample size first before showing percentages, and get to know the data first before making charts. It turns out I spent more time cleaning the data than making the dashboards.
